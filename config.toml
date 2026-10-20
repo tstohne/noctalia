@@ -1,0 +1,241 @@
+# ~/.config/noctalia/config.toml  (Noctalia v5.x)
+#
+# Ported from the old settings.json / colors.json / plugins.json, plus:
+# persistent-workspace labels, a standalone dock, weather, idle behaviors, and
+# blur-friendly opacities. Blur itself, persistent workspaces and IPC keybinds
+# live in Hyprland (see noctalia.lua).
+#
+# Check it with:   noctalia config validate
+# Note: ~/.local/state/noctalia/settings.toml (written by the Settings GUI)
+# loads AFTER this file and wins. If a value here seems ignored, look there.
+
+# ───────────────────────────── Shell ─────────────────────────────
+
+[shell]
+font_family         = "FiraCode Nerd Font Mono Ret"
+time_format         = "%T"                          # shell UI default time (panels, lock screen)
+date_format         = "{:%A}\n{:%Y-%m-%d}"          # shell UI default date (two lines)
+avatar_path         = "~/.face"
+telemetry_enabled   = false
+external_ip_enabled = false
+offline_mode        = false
+
+# Built-in clipboard history replaces the old cliphist/wl-paste watchers.
+clipboard_enabled             = true
+clipboard_history_max_entries = 100
+clipboard_auto_paste          = "off"
+
+# Terminal apps launched from Noctalia use $TERMINAL (executable name only,
+# no "-e"). Make sure it is set in your session environment, e.g. TERMINAL=kitty.
+
+# Uncomment ONE of these only if Noctalia runs under uwsm / as a user unit:
+# launch_apps_as_systemd_services = true
+# launch_apps_custom_command      = "uwsm-app -- $CMD"
+
+[shell.animation]
+enabled = false
+speed   = 1.0
+
+[shell.shadow]
+direction = "down_right"
+alpha     = 0.55
+
+[shell.panel]
+transparency_mode        = "soft"       # solid | soft | glass (lets blur show through)
+launcher_placement       = "floating"
+launcher_position        = "center"
+control_center_placement = "attached"
+
+[shell.launcher]
+layout        = "full"
+default_view  = "recent"
+categories    = true
+track_usage   = true
+sort_by_usage = true
+auto_paste    = "off"
+
+[shell.launcher.providers.session]
+global = true
+
+[shell.launcher.providers.windows]
+global = true
+
+# Session (power) menu: no hibernate action in v5; 10 s countdown on the
+# destructive entries, like the old setup.
+[shell.session]
+grid = false
+
+[[shell.session.actions]]
+action = "lock"
+
+[[shell.session.actions]]
+action            = "logout"
+countdown_seconds = 10
+# command         = "uwsm stop"        # uncomment if you log in through uwsm
+
+[[shell.session.actions]]
+action = "lock_and_suspend"
+
+[[shell.session.actions]]
+action            = "reboot"
+countdown_seconds = 10
+
+[[shell.session.actions]]
+action            = "reboot_uefi"
+countdown_seconds = 10
+
+[[shell.session.actions]]
+action            = "shutdown"
+countdown_seconds = 10
+variant           = "destructive"
+
+# ───────────────────────────── Theme ─────────────────────────────
+
+[theme]
+source         = "custom"
+custom_palette = "Zenburn"   # loads ~/.config/noctalia/palettes/Zenburn.json
+
+[theme.templates]
+enable_builtin_templates = true
+builtin_ids              = ["gtk", "qt"]   # confirm IDs with: noctalia theme --list-templates
+
+# ───────────────────────────── Bar ───────────────────────────────
+
+[bar.default]
+position           = "top"
+background_opacity = 0.85               # <1.0 so compositor blur is visible
+compositor_blur    = true
+capsule            = true
+margin_ends        = 0                  # full-width bar
+margin_edge        = 0
+concave_edge_corners = true
+widget_spacing     = 6
+
+start  = ["launcher", "clock", "active_window", "media"]
+center = ["workspaces"]
+end    = [ "weather", "temp", "cpu", "ram","tray", "notifications", "battery", "volume", "brightness", "control-center", "noctalia/screen_recorder:recorder"]
+
+[widget.clock]
+format         = "%T  %a %Y-%m-%d"                  # single line on the bar
+tooltip_format = "{:%A, %B %d, %Y}"
+
+# Persistent workspaces: 1=Web 2=Term 3=Emacs 4=Chat 5=Etc (names come from
+# the Hyprland workspace rules in noctalia.lua).
+[widget.workspaces]
+style                     = "regular"
+show_labels               = true
+label_source              = "name"
+max_label_chars           = 5           # "Emacs" is the longest name
+labels_only_when_occupied = false
+hide_when_empty           = false
+
+[widget.weather]
+type = "weather"
+
+[widget.temp]
+type          = "sysmon"
+stat          = "cpu_temp"
+visualization = "none"
+
+[widget.cpu]
+type          = "sysmon"
+stat          = "cpu_usage"
+visualization = "none"
+
+[widget.ram]
+type          = "sysmon"
+stat          = "ram_used"
+visualization = "none"
+
+# ───────────────────────────── Dock ──────────────────────────────
+# Standalone application dock showing pinned and running apps.
+
+[dock]
+enabled             = true
+position            = "bottom"
+show_running        = true
+auto_hide           = true
+reserve_space       = false             # overlay while hidden, no permanent gap
+background_opacity  = 0.85
+magnification       = true
+layer               = "top"
+pinned              = ["kitty", "emacs", "thorium-browser", "thunar"]   # desktop-entry IDs; drag to reorder
+
+# ──────────────────── Notifications and OSD ──────────────────────
+
+[notification]
+enable_daemon            = true
+position                 = "top_right"
+layer                    = "overlay"
+background_opacity       = 0.9
+keep_dismissed_in_history = true
+
+[osd]
+position           = "top_right"
+hide_delay_ms      = 2000
+background_opacity = 0.9
+
+# ───────────────────────── Idle and lock ─────────────────────────
+# If hypridle (or another idle daemon) is already running, disable one side.
+
+[idle]
+behavior_order          = ["lock", "screen-off", "suspend"]
+pre_action_fade_seconds = 2.0
+
+[idle.behavior.lock]
+timeout = 300
+action  = "lock"
+enabled = true
+
+[idle.behavior.screen-off]
+timeout = 330
+action  = "screen_off"
+enabled = true
+
+[idle.behavior.suspend]
+timeout = 900
+action  = "lock_and_suspend"
+enabled = true
+
+[lockscreen]
+enabled             = true
+lock_before_suspend = true
+fingerprint         = false
+blur_intensity      = 0.0
+tint_intensity      = 0.0
+transition          = []                # no lock/unlock animation
+
+# ───────────────────────── Wallpaper ─────────────────────────────
+
+[wallpaper]
+enabled               = true
+directory             = "/home/ts/Bilder/"
+fill_mode             = "crop"
+fill_color            = "#000000"
+transition            = ["fade", "wipe"]
+transition_duration   = 800
+transition_on_startup = false
+
+[wallpaper.automation]
+enabled          = true
+interval_seconds = 1800
+order            = "alphabetical"
+
+# ───────────────────── Weather and night light ───────────────────
+
+[weather]
+enabled           = true
+auto_locate       = false               # no IP lookup
+address           = "Stockholm"
+unit              = "metric"
+refresh_minutes   = 30
+
+[nightlight]
+enabled             = false
+use_weather_location = true
+
+# ───────────────────────── Plugins ───────────────────────────────
+# Enable once from a terminal (needs gpu-screen-recorder installed):
+#   noctalia msg plugins enable noctalia/screen_recorder
+# Recorder options (source, codec, fps, folder) are plugin settings in
+# Settings -> Plugins, not in this file.
