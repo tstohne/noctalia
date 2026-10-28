@@ -111,9 +111,9 @@ margin_edge        = 0
 concave_edge_corners = true
 widget_spacing     = 6
 
-start  = ["launcher", "clock", "active_window", "media"]
+start  = ["launcher", "clock"]
 center = ["workspaces"]
-end    = [ "weather", "temp", "cpu", "ram","tray", "notifications", "battery", "volume", "brightness", "control-center", "noctalia/screen_recorder:recorder"]
+end    = [ "weather", "temp", "cpu", "ram","tray", "notifications", "privacy", "battery", "power_profile", "volume", "brightness", "nightlight", "control-center", "noctalia/screen_recorder:recorder"]
 
 [widget.clock]
 format         = "%T  %a %Y-%m-%d"                  # single line on the bar
